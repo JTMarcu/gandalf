@@ -19,9 +19,7 @@ Gandalf/
 │   ├── index.pkl
 ├── models/mistral/         # Local Mistral model
 │   ├── mistral-7b-instruct-v0.1.Q4_K_M.gguf
-├── gandalf_chat.py         # Python script for chatbot
 ├── gandalf_mistral_local.ipynb  # Jupyter Notebook for local setup
-├── gandalf_chatbot_demo.ipynb   # Demo notebook
 ├── gandalf_index.py        # Script to create FAISS index
 ├── app.py                  # Gradio app for chatbot
 ├── .env                    # Environment variables
