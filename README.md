@@ -1,3 +1,4 @@
+
 # Gandalf 🧙  
 **LOTR Wisdom - Local Chatbot**
 
@@ -8,6 +9,7 @@ Gandalf is a fully local Retrieval-Augmented Generation (RAG) chatbot designed t
 - **PDF Integration**: Processes "The Lord of the Rings" PDF for question answering.
 - **Vector Search**: Uses FAISS for efficient document retrieval.
 - **Mistral-7B-Instruct**: Runs the lightweight `mistral-7b-instruct-v0.1.Q4_K_M.gguf` model locally.
+- **Gradio Interface**: User-friendly web interface for interacting with the chatbot.
 
 ## Project Structure
 ```
@@ -20,7 +22,10 @@ Gandalf/
 ├── gandalf_chat.py         # Python script for chatbot
 ├── gandalf_mistral_local.ipynb  # Jupyter Notebook for local setup
 ├── gandalf_chatbot_demo.ipynb   # Demo notebook
+├── gandalf_index.py        # Script to create FAISS index
+├── app.py                  # Gradio app for chatbot
 ├── .env                    # Environment variables
+├── requirements.txt        # Python dependencies
 └── README.md               # Project documentation
 ```
 
@@ -29,23 +34,30 @@ Gandalf/
 ### 1. Install Required Libraries
 Run the following command to install dependencies:
 ```bash
-pip install -q transformers sentence-transformers langchain faiss-cpu pypdf python-dotenv llama-cpp-python
+pip install -r requirements.txt
 ```
 
 ### 2. Prepare the Environment
 - Place your "The Lord of the Rings" PDF in the project directory.
-- Update the `.env` file with your Hugging Face API token (if needed):
+- Update the `.env` file with your Hugging Face API token:
   ```properties
   HUGGINGFACEHUB_API_TOKEN=your_huggingface_token
   ```
 
-### 3. Run the Chatbot
+### 3. Create the FAISS Index
+Run the `gandalf_index.py` script to process the PDF and create the FAISS vectorstore:
+```bash
+python gandalf_index.py
+```
+
+### 4. Run the Chatbot
 You can use the chatbot in two ways:
-1. **Jupyter Notebook**: Open `gandalf_chatbot.ipynb` andfollow the steps.
-2. **Python Script**: Run the `gandalf_chat.py` script:
+1. **Gradio Interface**: Launch the web app using `app.py`:
    ```bash
-   python gandalf_chat.py
+   python app.py
    ```
+   Open the provided URL in your browser to interact with Gandalf.
+2. **Jupyter Notebook**: Open gandalf_mistral_local.ipynb or gandalf_chatbot_demo.ipynb and follow the steps.
 
 ## How It Works
 1. **Document Processing**: The PDF is split into chunks using LangChain's text splitter.
@@ -71,6 +83,7 @@ print("🧙 Gandalf says:\n", result['result'])
 ## Future Enhancements
 - Add support for additional texts from Tolkien's legendarium.
 - Experiment with other lightweight local models for improved performance.
+- Enhance the Gradio interface with additional features like context visualization.
 
 ---
 **"A wizard is never late, nor is he early, he arrives precisely when he means to."**
