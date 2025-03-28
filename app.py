@@ -1,10 +1,12 @@
 import os
 import warnings
 warnings.filterwarnings("ignore", category=FutureWarning)
-from dotenv import load_dotenv
+
+# Note: In a Hugging Face Space, the token should be set as an environment variable in the Space settings.
+from dotenv import load_dotenv # remove when on HF Space
 
 # 🔐 Load Hugging Face API token
-load_dotenv()
+load_dotenv() #remove line when on HF Space. 
 hf_token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 if not hf_token:
     raise ValueError("❌ Missing Hugging Face API token in environment variables.")
