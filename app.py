@@ -40,17 +40,15 @@ custom_prompt = PromptTemplate(
     input_variables=["context", "question"],
     template="""
 Use the following context to answer the question. 
-If you don't know the answer, just say you don't know — do not make up an answer.
-
+If the answer is not in the context, reply as Gandalf would — something wise or witty, and make it clear that the answer is unknown.
 Context:
 {context}
-
 Question:
 {question}
-
 Answer:
 """
 )
+
 
 qa_chain = RetrievalQA.from_chain_type(
     llm=llm,
@@ -64,14 +62,26 @@ qa_chain = RetrievalQA.from_chain_type(
 import gradio as gr
 
 def ask_gandalf(question):
-    result = qa_chain.invoke({"query": question})
-    answer = result['result']
-    sources = result['source_documents']
-    
-    # Try to get chapter metadata from first source
-    chapter = sources[0].metadata.get("chapter", "Chapter unknown") if sources else "Chapter unknown"
+    # Retrieve relevant docs
+    docs = retriever.get_relevant_documents(question)
 
-    return f"{answer}\n\n📖 Source: {chapter}"
+    # Get unique chapters from docs
+    chapters = {doc.metadata.get("chapter", "Unknown") for doc in docs}
+    chapter_info = ", ".join(sorted(chapters))
+
+    # Build custom prompt with context + chapter info
+    context = "\n\n".join(doc.page_content for doc in docs)
+
+    prompt = custom_prompt.format(
+        context=context,
+        question=question,
+        chapter_info=chapter_info or "Unknown"
+    )
+
+    # Call the model
+    answer = llm.invoke(prompt)
+
+    return f"{answer}\n\n📖 Referenced Chapter(s): {chapter_info}"
 
 demo = gr.Interface(
     fn=ask_gandalf,
