@@ -78,9 +78,17 @@ def ask_gandalf(question):
     if "I don't know" in answer.lower():
         answer = random.choice(gandalf_quotes)
 
-    chapter = sources[0].metadata.get("chapter", "Chapter unknown") if sources else "Chapter unknown"
+    # Extract metadata from the first source document
+    if sources:
+        source = sources[0].metadata
+        chapter_number = source.get("chapter_number", "Unknown chapter number")
+        chapter_name = source.get("chapter_name", "Unknown chapter name")
+        book_name = source.get("book_name", "Unknown book")
+        reference = f"📖 Source: {book_name}, {chapter_number} - {chapter_name}"
+    else:
+        reference = "📖 Source: Unknown"
 
-    return f"{answer}\n\n📖 Source: {chapter}"
+    return f"{answer}\n\n{reference}"
 
 demo = gr.Interface(
     fn=ask_gandalf,
