@@ -1,88 +1,122 @@
-
 # Gandalf 🧙  
-**LOTR Wisdom - Local Chatbot**
+**Tolkien Lore Chatbot — Powered by RAG**
 
-Gandalf is a fully local Retrieval-Augmented Generation (RAG) chatbot designed to answer questions about "The Lord of the Rings" using LangChain, FAISS, and the Mistral-7B-Instruct model. This project ensures privacy by running entirely on your local machine, with no external API calls after setup.
+Gandalf is a Retrieval-Augmented Generation (RAG) chatbot trained on the full text of J.R.R. Tolkien's core legendarium:
 
-## Features
-- **Local Execution**: No internet or cloud APIs required after initial setup.
-- **PDF Integration**: Processes "The Lord of the Rings" PDF for question answering.
-- **Vector Search**: Uses FAISS for efficient document retrieval.
-- **Mistral-7B-Instruct**: Runs the lightweight `mistral-7b-instruct-v0.1.Q4_K_M.gguf` model locally.
-- **Gradio Interface**: User-friendly web interface for interacting with the chatbot.
+- 📘 [The Hobbit (1937)](https://archive.org/details/TheHobbit_201905)
+- 📗 [The Lord of the Rings (1954–1955)](https://archive.org/details/tolkien-j.-the-lord-of-the-rings-harper-collins-ebooks-2010)
+- 📙 [The Silmarillion (1977)](https://archive.org/details/TheSilmarillionIllustratedJ.R.R.TolkienTedNasmith)
 
-## Project Structure
+Built with LangChain, FAISS, and the Mistral-7B-Instruct model, this project offers canonical, chapter-referenced answers to your Middle-earth questions — either locally or via Hugging Face Spaces.
+
+🔗 **Live Demo**: [Ask Gandalf on Hugging Face](https://huggingface.co/spaces/CupaTroopa/gandalf)
+
+---
+
+## ✨ Features
+
+- **📚 Multi-Book Integration**: Pulls from The Hobbit, LOTR, and The Silmarillion.
+- **🧠 RAG Pipeline**: Combines semantic search and generation.
+- **📎 Source-Aware Responses**: Includes book/chapter metadata in answers.
+- **💻 Local Execution (optional)**: No API calls after setup.
+- **🌐 Gradio UI**: Web interface for local or Hugging Face deployment.
+
+---
+
+## 📁 Project Structure
+
 ```
 Gandalf/
-├── gandalf_index/          # FAISS vectorstore files
+├── books/                       # PDF files for indexing
+│   ├── The Hobbit.pdf
+│   ├── The Lord of the Rings.pdf
+│   └── The Silmarillion.pdf
+├── gandalf_index.py            # Merged indexing script (Hobbit + LOTR + Silmarillion)
+├── app.py                      # Gradio chatbot interface
+├── gandalf_index/              # FAISS vectorstore
 │   ├── index.faiss
-│   ├── index.pkl
-├── models/mistral/         # Local Mistral model
-│   ├── mistral-7b-instruct-v0.1.Q4_K_M.gguf
-├── gandalf_mistral_local.ipynb  # Jupyter Notebook for local setup
-├── gandalf_index.py        # Script to create FAISS index
-├── app.py                  # Gradio app for chatbot
-├── .env                    # Environment variables
-├── requirements.txt        # Python dependencies
-└── README.md               # Project documentation
+│   └── index.pkl
+├── models/                     # Optional local LLM folder
+├── .env                        # Hugging Face API token
+├── requirements.txt            # Dependencies
+└── README.md                   # Project documentation
 ```
 
-## Setup Instructions
+---
 
-### 1. Install Required Libraries
-Run the following command to install dependencies:
+## 🚀 Quickstart
+
+### 1. Install Requirements
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Prepare the Environment
-- Place your "The Lord of the Rings" PDF in the project directory.
-- Update the `.env` file with your Hugging Face API token:
-  ```properties
-  HUGGINGFACEHUB_API_TOKEN=your_huggingface_token
-  ```
+### 2. Add Environment Variable
+Create a `.env` file:
+```properties
+HUGGINGFACEHUB_API_TOKEN=your_token_here
+```
 
-### 3. Create the FAISS Index
-Run the `gandalf_index.py` script to process the PDF and create the FAISS vectorstore:
+### 3. Add Tolkien PDFs
+Place all 3 books inside a `/books` folder:
+- `The Hobbit.pdf`
+- `The Lord of the Rings.pdf`
+- `The Silmarillion.pdf`
+
+### 4. Generate the Vector Index
 ```bash
 python gandalf_index.py
 ```
 
-### 4. Run the Chatbot
-You can use the chatbot in two ways:
-1. **Gradio Interface**: Launch the web app using `app.py`:
-   ```bash
-   python app.py
-   ```
-   Open the provided URL in your browser to interact with Gandalf.
-2. **Jupyter Notebook**: Open gandalf_mistral_local.ipynb or gandalf_chatbot_demo.ipynb and follow the steps.
+### 5. Launch the Chatbot
+```bash
+python app.py
+```
 
-## How It Works
-1. **Document Processing**: The PDF is split into chunks using LangChain's text splitter.
-2. **Vector Embedding**: Each chunk is embedded using `sentence-transformers/all-MiniLM-L6-v2` and stored in a FAISS index.
-3. **Question Answering**: The Mistral-7B-Instruct model retrieves relevant chunks and generates answers.
+Open the Gradio link in your browser and speak, friend!
 
-## Example Usage
-Ask Gandalf a question:
+---
+
+## 🧪 Example Usage
+
 ```python
-question = "What happened in the mines of Moria?"
+question = "What is the origin of the Silmarils?"
 result = qa_chain.invoke({"query": question})
 print("🧙 Gandalf says:\n", result['result'])
 ```
 
-## Requirements
-- Python 3.8+
-- Sufficient disk space for the Mistral model and FAISS index.
+---
 
-## Notes
-- The Mistral model file (`mistral-7b-instruct-v0.1.Q4_K_M.gguf`) is optimized for local inference.
-- Ensure you have sufficient memory (RAM) to load the model.
+## 🛠 How It Works
 
-## Future Enhancements
-- Add support for additional texts from Tolkien's legendarium.
-- Experiment with other lightweight local models for improved performance.
-- Enhance the Gradio interface with additional features like context visualization.
+1. **Text Extraction** — PDFs are parsed with `pdfminer.six`.
+2. **Chunking + Metadata** — LangChain splits the text by chapter and book.
+3. **Embedding + Storage** — Each chunk is vectorized (MiniLM) and stored in FAISS.
+4. **Retrieval + Generation** — Mistral-7B uses top-k chunks to answer contextually.
 
 ---
-**"A wizard is never late, nor is he early, he arrives precisely when he means to."**
+
+## 📌 Requirements
+
+- Python 3.8+
+- ~8–16 GB RAM for local model inference (optional)
+- Access to Hugging Face for inference or deployment
+
+---
+
+## 🛠️ Future Enhancements
+
+- Add support for *Unfinished Tales* and *The Letters of J.R.R. Tolkien*
+- Gandalf-style voice with ElevenLabs or Bark
+- Chapter highlighting or source text preview
+- Offline-only mode with GGUF-compatible local models
+
+---
+
+> “The burned hand teaches best. After that advice about fire goes to the heart.”  
+> ― J.R.R. Tolkien, *The Two Towers*
+
+---
+
+🛡️ Built with care by [Jonathan Marcu](https://github.com/JTMarcu) · [Live Demo](https://huggingface.co/spaces/CupaTroopa/gandalf)
 ```
