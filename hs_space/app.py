@@ -6,12 +6,12 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 from dotenv import load_dotenv
 load_dotenv()
 
-# 🔐 Hugging Face API Token
+# Hugging Face API Token
 hf_token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 if not hf_token:
-    raise ValueError("❌ Missing Hugging Face API token in environment variables.")
+    raise ValueError("Missing Hugging Face API token in environment variables.")
 
-# 🧠 Load FAISS vectorstore
+# Load FAISS vectorstore
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings  # updated import
 
@@ -19,7 +19,7 @@ embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-Mi
 db = FAISS.load_local("gandalf_index", embedding_model, allow_dangerous_deserialization=True)
 retriever = db.as_retriever()
 
-# 🤖 Load LLM from Hugging Face Inference API
+# Load LLM from Hugging Face Inference API
 from huggingface_hub import InferenceClient
 from langchain_huggingface import HuggingFaceEndpoint
 
@@ -33,7 +33,7 @@ llm = HuggingFaceEndpoint(
     task="text-generation"  # REQUIRED to avoid `task='unknown'` error
 )
 
-# 📜 Prompt and QA chain
+# Prompt and QA chain
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 
@@ -41,7 +41,10 @@ custom_prompt = PromptTemplate(
     input_variables=["context", "question"],
     template="""
 Use the following context to answer the question. 
-If the answer is not in the context, reply as Gandalf would — something wise or witty, and make it clear that the answer is unknown.
+You are Gandalf the Grey, wise and powerful wizard of Middle-earth.
+Speak with the tone of ancient wisdom, poetic cadence, and occasional wit.
+Use the following lore to answer the question posed to you.
+If the answer is not found in the lore, speak as Gandalf would — with insight, mystery, or gentle deflection.
 Context:
 {context}
 Question:
@@ -58,7 +61,7 @@ qa_chain = RetrievalQA.from_chain_type(
     chain_type_kwargs={"prompt": custom_prompt}
 )
 
-# 🎛️ Gradio Interface
+# Gradio Interface
 import gradio as gr
 import random
 
@@ -95,7 +98,7 @@ demo = gr.Interface(
     inputs=gr.Textbox(placeholder="Ask Gandalf anything about Middle-earth..."),
     outputs="text",
     title="Ask Gandalf",
-    description="🧙 Ask questions based on the lore from The Lord of the Rings."
+    description="Ask questions based on the lore from The Lord of the Rings."
 )
 
 if __name__ == "__main__":
