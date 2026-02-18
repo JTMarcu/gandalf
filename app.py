@@ -12,10 +12,8 @@ import warnings
 import gradio as gr
 from dotenv import load_dotenv
 from huggingface_hub import InferenceClient
-from langchain.chains import RetrievalQA
-from langchain.prompts import PromptTemplate
 from langchain_community.vectorstores import FAISS
-from langchain_huggingface import HuggingFaceEmbeddings, HuggingFaceEndpoint
+from langchain_huggingface import HuggingFaceEmbeddings
 
 from config import (
     APP_DESCRIPTION,
@@ -26,7 +24,8 @@ from config import (
     LLM_MAX_NEW_TOKENS,
     LLM_MODEL,
     LLM_TEMPERATURE,
-    SYSTEM_PROMPT,
+    SYSTEM_MESSAGE,
+    USER_TEMPLATE,
 )
 
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -47,36 +46,30 @@ retriever = db.as_retriever()
 
 # ── LLM ───────────────────────────────────────────────────────────────────
 client = InferenceClient(model=LLM_MODEL, token=hf_token)
-llm = HuggingFaceEndpoint(
-    client=client,
-    model=LLM_MODEL,
-    temperature=LLM_TEMPERATURE,
-    max_new_tokens=LLM_MAX_NEW_TOKENS,
-    task="text-generation",
-)
-
-# ── QA chain ──────────────────────────────────────────────────────────────
-prompt = PromptTemplate(
-    input_variables=["context", "question"],
-    template=SYSTEM_PROMPT,
-)
-
-qa_chain = RetrievalQA.from_chain_type(
-    llm=llm,
-    retriever=retriever,
-    chain_type="stuff",
-    return_source_documents=True,
-    chain_type_kwargs={"prompt": prompt},
-)
 
 
 # ── Chat function ─────────────────────────────────────────────────────────
 
 def ask_gandalf(question: str) -> str:
-    """Run the RAG chain and format the answer with source citation."""
-    result = qa_chain.invoke({"query": question})
-    answer: str = result["result"]
-    sources: list = result["source_documents"]
+    """Retrieve relevant lore and generate a Gandalf-style answer."""
+    # Retrieve relevant documents
+    docs = retriever.invoke(question)
+    context = "\n\n".join(doc.page_content for doc in docs)
+
+    # Build chat messages
+    messages = [
+        {"role": "system", "content": SYSTEM_MESSAGE},
+        {"role": "user", "content": USER_TEMPLATE.format(context=context, question=question)},
+    ]
+
+    # Generate answer via chat completion
+    response = client.chat_completion(
+        messages=messages,
+        max_tokens=LLM_MAX_NEW_TOKENS,
+        temperature=LLM_TEMPERATURE,
+    )
+    answer: str = response.choices[0].message.content
+    sources: list = docs
 
     # Fallback when the model punts
     if "i don't know" in answer.lower():
