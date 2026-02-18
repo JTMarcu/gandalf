@@ -165,19 +165,25 @@ CUSTOM_CSS: str = """\
 .gradio-container {
     max-width: 800px !important;
     margin: 0 auto !important;
+    padding-top: 0 !important;
 }
 
 /* Title */
+#title {
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+}
 #title h1 {
     font-family: 'Cinzel', serif !important;
     color: #c8a84e !important;
     text-align: center !important;
-    font-size: 3rem !important;
+    font-size: 2.5rem !important;
     letter-spacing: 0.15em !important;
     text-shadow: 0 0 20px rgba(200, 168, 78, 0.3) !important;
     white-space: nowrap !important;
-    margin-top: 0 !important;
-    padding-top: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 /* Description */
