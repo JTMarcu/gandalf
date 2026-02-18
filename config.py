@@ -124,20 +124,19 @@ CUSTOM_CSS: str = """\
 
 /* Input textbox */
 #question {
-    border: 2px solid #c8a84e !important;
-    border-radius: 8px !important;
-    padding: 2px !important;
     background: #1e1a14 !important;
 }
-#question textarea {
+#question textarea,
+#question .scroll-hide {
     background: #1e1a14 !important;
-    border: none !important;
+    border: 2px solid #c8a84e !important;
     color: #d4c5a9 !important;
     font-family: 'Crimson Text', Georgia, serif !important;
     font-size: 1.15rem !important;
-    border-radius: 6px !important;
+    border-radius: 8px !important;
     padding: 16px !important;
-    min-height: 80px !important;
+    min-height: 100px !important;
+    height: 100px !important;
 }
 #question textarea:focus {
     border-color: #c8a84e !important;
