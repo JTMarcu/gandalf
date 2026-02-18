@@ -162,20 +162,13 @@ GANDALF_THEME = gr.themes.Base(
 CUSTOM_CSS: str = """\
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
 
-/* Kill all extra space to fit HF Spaces iframe */
 .gradio-container {
     max-width: 800px !important;
     margin: 0 auto !important;
-    padding: 0.5rem 1rem !important;
-    overflow: hidden !important;
 }
-.gap { gap: 0.4rem !important; }
 
 /* Title */
 #title {
-    padding: 0 !important;
-    margin: 0 !important;
-    min-height: 0 !important;
     overflow: visible !important;
 }
 #title > * {
@@ -185,13 +178,10 @@ CUSTOM_CSS: str = """\
     font-family: 'Cinzel', serif !important;
     color: #c8a84e !important;
     text-align: center !important;
-    font-size: 2.2rem !important;
+    font-size: 2.8rem !important;
     letter-spacing: 0.1em !important;
     text-shadow: 0 0 20px rgba(200, 168, 78, 0.3) !important;
     white-space: nowrap !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    line-height: 1.2 !important;
     overflow: visible !important;
 }
 
@@ -199,12 +189,6 @@ CUSTOM_CSS: str = """\
 #description {
     text-align: center !important;
     color: #9a8c7a !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    min-height: 0 !important;
-}
-#description p {
-    margin: 0.15rem 0 !important;
 }
 #description em, #description strong {
     color: #c8a84e !important;
@@ -213,9 +197,6 @@ CUSTOM_CSS: str = """\
 /* Input label */
 #input-label {
     text-align: center !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    min-height: 0 !important;
 }
 #input-label strong {
     font-family: 'Cinzel', serif !important;
@@ -223,17 +204,11 @@ CUSTOM_CSS: str = """\
     letter-spacing: 0.05em !important;
 }
 
-/* Answer */
-#answer { min-height: 0 !important; }
-
 /* Footer */
 #footer {
     text-align: center !important;
     color: #4a3f30 !important;
     font-style: italic !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    min-height: 0 !important;
 }
 footer { display: none !important; }
 
