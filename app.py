@@ -18,7 +18,9 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from config import (
     APP_DESCRIPTION,
     APP_TITLE,
+    CUSTOM_CSS,
     EMBEDDING_MODEL,
+    EXAMPLE_QUESTIONS,
     FAISS_INDEX_DIR,
     GANDALF_QUOTES,
     LLM_MAX_NEW_TOKENS,
@@ -95,13 +97,46 @@ def ask_gandalf(question: str) -> str:
 
 # ── Gradio UI ─────────────────────────────────────────────────────────────
 
-demo = gr.Interface(
-    fn=ask_gandalf,
-    inputs=gr.Textbox(placeholder="Ask Gandalf anything about Middle-earth..."),
-    outputs="text",
-    title=APP_TITLE,
-    description=APP_DESCRIPTION,
-)
+with gr.Blocks(css=CUSTOM_CSS, title="Gandalf — Tolkien Lore Chatbot") as demo:
+
+    # Header
+    gr.Markdown(f"# {APP_TITLE}", elem_id="title")
+    gr.Markdown(APP_DESCRIPTION, elem_id="description")
+    gr.Markdown('<p class="divider">⚔  ✦  ⚔</p>')
+
+    # Input
+    question = gr.Textbox(
+        placeholder="Ask Gandalf anything about Middle-earth…",
+        lines=2,
+        show_label=False,
+        elem_id="question",
+    )
+
+    # Buttons
+    with gr.Row():
+        clear_btn = gr.ClearButton(value="Clear", elem_id="clear")
+        submit_btn = gr.Button("Ask Gandalf", elem_id="submit")
+
+    # Output
+    answer = gr.Markdown(elem_id="answer")
+
+    # Examples
+    gr.Examples(
+        examples=[[q] for q in EXAMPLE_QUESTIONS],
+        inputs=question,
+        elem_classes=["example-btn"],
+    )
+
+    # Footer
+    gr.Markdown(
+        "Built with FAISS · Sentence-Transformers · Qwen · Gradio",
+        elem_id="footer",
+    )
+
+    # Events
+    submit_btn.click(ask_gandalf, inputs=question, outputs=answer)
+    question.submit(ask_gandalf, inputs=question, outputs=answer)
+    clear_btn.add([question, answer])
 
 if __name__ == "__main__":
     demo.launch()

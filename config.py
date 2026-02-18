@@ -49,8 +49,166 @@ GANDALF_QUOTES: list[str] = [
 # ---------------------------------------------------------------------------
 # Gradio UI
 # ---------------------------------------------------------------------------
-APP_TITLE: str = "Ask Gandalf"
+APP_TITLE: str = "🧙 Gandalf"
 APP_DESCRIPTION: str = (
-    "A RAG chatbot powered by the lore of The Hobbit, The Lord of the Rings, "
-    "and The Silmarillion. Ask anything about Middle-earth!"
+    "*Speak, friend, and enter.*\n\n"
+    "A RAG chatbot grounded in the lore of **The Hobbit**, "
+    "**The Lord of the Rings**, and **The Silmarillion**.\n\n"
+    "Ask anything about Middle-earth and Gandalf shall answer."
 )
+
+EXAMPLE_QUESTIONS: list[str] = [
+    "Who is Belladonna Took?",
+    "What happened at the Battle of Helm's Deep?",
+    "Tell me about the Silmarils.",
+    "What is the One Ring?",
+    "Who were the Istari?",
+    "What is the history of Gondolin?",
+]
+
+CUSTOM_CSS: str = """\
+/* ── Middle-earth theme ─────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+/* Dark parchment background */
+.gradio-container {
+    background: radial-gradient(ellipse at top, #1a1510 0%, #0d0b08 70%) !important;
+    font-family: 'Crimson Text', Georgia, serif !important;
+    max-width: 800px !important;
+    margin: 0 auto !important;
+}
+
+/* Title styling */
+#title {
+    font-family: 'Cinzel', serif !important;
+    color: #c8a84e !important;
+    text-align: center !important;
+    font-size: 3rem !important;
+    letter-spacing: 0.15em !important;
+    text-shadow: 0 0 20px rgba(200, 168, 78, 0.3) !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Description */
+#description {
+    text-align: center !important;
+    color: #9a8c7a !important;
+    font-style: italic !important;
+    font-size: 1.1rem !important;
+    margin-top: 0 !important;
+}
+#description em, #description strong {
+    color: #c8a84e !important;
+}
+
+/* Decorative divider */
+.divider {
+    text-align: center;
+    color: #5a4a32;
+    font-size: 1.4rem;
+    letter-spacing: 0.5em;
+    margin: 0.5rem 0;
+}
+
+/* Input textbox */
+#question textarea {
+    background: #1e1a14 !important;
+    border: 1px solid #3d3424 !important;
+    color: #d4c5a9 !important;
+    font-family: 'Crimson Text', Georgia, serif !important;
+    font-size: 1.1rem !important;
+    border-radius: 6px !important;
+    padding: 14px !important;
+}
+#question textarea:focus {
+    border-color: #c8a84e !important;
+    box-shadow: 0 0 12px rgba(200, 168, 78, 0.15) !important;
+}
+#question textarea::placeholder {
+    color: #6b5d4a !important;
+    font-style: italic !important;
+}
+#question label {
+    display: none !important;
+}
+
+/* Submit button */
+#submit {
+    background: linear-gradient(135deg, #5a4a32, #3d3424) !important;
+    border: 1px solid #c8a84e !important;
+    color: #c8a84e !important;
+    font-family: 'Cinzel', serif !important;
+    font-size: 1rem !important;
+    letter-spacing: 0.1em !important;
+    border-radius: 6px !important;
+    padding: 10px 32px !important;
+    transition: all 0.3s ease !important;
+}
+#submit:hover {
+    background: linear-gradient(135deg, #6b5d4a, #5a4a32) !important;
+    box-shadow: 0 0 16px rgba(200, 168, 78, 0.25) !important;
+}
+
+/* Clear button */
+#clear {
+    background: transparent !important;
+    border: 1px solid #3d3424 !important;
+    color: #6b5d4a !important;
+    font-family: 'Cinzel', serif !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.1em !important;
+    border-radius: 6px !important;
+}
+#clear:hover {
+    border-color: #6b5d4a !important;
+    color: #9a8c7a !important;
+}
+
+/* Output area */
+#answer {
+    background: #1e1a14 !important;
+    border: 1px solid #3d3424 !important;
+    border-radius: 6px !important;
+    padding: 20px !important;
+    min-height: 160px !important;
+}
+#answer .prose {
+    color: #d4c5a9 !important;
+    font-family: 'Crimson Text', Georgia, serif !important;
+    font-size: 1.1rem !important;
+    line-height: 1.7 !important;
+}
+#answer label {
+    display: none !important;
+}
+
+/* Example buttons */
+.example-btn button {
+    background: #1e1a14 !important;
+    border: 1px solid #3d3424 !important;
+    color: #9a8c7a !important;
+    font-family: 'Crimson Text', Georgia, serif !important;
+    font-size: 0.95rem !important;
+    font-style: italic !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+}
+.example-btn button:hover {
+    border-color: #c8a84e !important;
+    color: #c8a84e !important;
+    background: #251f17 !important;
+}
+
+/* Footer */
+#footer {
+    text-align: center !important;
+    color: #4a3f30 !important;
+    font-size: 0.85rem !important;
+    margin-top: 1.5rem !important;
+    font-style: italic !important;
+}
+
+/* Hide default footer */
+footer { display: none !important; }
+"""
