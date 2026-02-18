@@ -175,6 +175,9 @@ CUSTOM_CSS: str = """\
     font-size: 3rem !important;
     letter-spacing: 0.15em !important;
     text-shadow: 0 0 20px rgba(200, 168, 78, 0.3) !important;
+    white-space: nowrap !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
 }
 
 /* Description */
@@ -199,4 +202,7 @@ CUSTOM_CSS: str = """\
 /* Footer */
 #footer { text-align: center !important; color: #4a3f30 !important; font-style: italic !important; }
 footer { display: none !important; }
+
+/* Hide dark/light mode toggle */
+.dark-mode-toggle, .gradio-container > .flex { display: none !important; }
 """
