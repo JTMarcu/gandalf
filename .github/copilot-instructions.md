@@ -34,13 +34,13 @@ Gandalf/
 - Keep chunk_size=500, chunk_overlap=100 for consistency with existing index
 
 ### Configuration
-- All model names, prompt templates, and tunable parameters live in `config.py`
+- All model names, prompt templates, tunable parameters, and the Gradio theme live in `config.py`
 - Environment variables via `python-dotenv`; token key is `HUGGINGFACEHUB_API_TOKEN`
 - Never hardcode API tokens
 
 ### HuggingFace Spaces Deployment
 - The GitHub Action in `.github/workflows/sync-to-hf.yml` auto-syncs to `CupaTroopa/gandalf`
-- HF Space expects `app.py`, `requirements.txt`, and `gandalf_index/` at repo root
+- HF Space expects `app.py`, `config.py`, `requirements.txt`, `README.md`, and `gandalf_index/` at repo root
 - The `app.py` must work both locally and on HF Spaces (use `dotenv` with graceful fallback)
 - Space SDK: Gradio
 
@@ -51,11 +51,14 @@ Gandalf/
 - Metadata per chunk: `book_name`, `chapter_number` (Hobbit only), `chapter_name`
 
 ### Gradio UI
-- Uses `gr.Blocks` API with custom CSS (Middle-earth dark parchment theme)
-- All UI constants (CSS, examples, title, description) live in `config.py`
+- Uses `gr.Blocks` API with a custom `gr.themes.Base` theme (`GANDALF_THEME` in `config.py`)
+- Theme handles all colors, fonts, inputs, buttons, borders natively (no CSS hacks on interactive elements)
+- Minimal CSS only for title font (Cinzel), text alignment, footer, hiding dark mode toggle
+- All UI constants (theme, CSS, examples, title, description) live in `config.py`
 - Stacked vertical layout: title → description → input → buttons → output → examples → footer
 - Include source citation (book + chapter) in every response
 - Fallback Gandalf quotes when the model says "I don't know"
+- System prompt enforces English-only responses (Qwen is multilingual)
 
 ## Do NOT
 - Commit `.env`, `books/`, `models/`, `notebooks/`, or `__pycache__/`

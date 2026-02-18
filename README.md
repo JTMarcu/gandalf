@@ -46,7 +46,7 @@ It combines semantic vector search over the full text with the **Qwen2.5-7B-Inst
 | **Vector Store** | [FAISS](https://github.com/facebookresearch/faiss) (via `langchain-community`) |
 | **LLM** | [`Qwen/Qwen2.5-7B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct) via HF Inference API |
 | **LLM Interface** | `huggingface_hub.InferenceClient.chat_completion()` |
-| **Web UI** | [Gradio 5](https://www.gradio.app/) Blocks API with custom CSS |
+| **Web UI** | [Gradio 5](https://www.gradio.app/) Blocks API with custom `gr.themes.Base` theme |
 | **PDF Parsing** | `pdfminer.six` via LangChain's `PyPDFLoader` |
 | **CI/CD** | GitHub Actions → `huggingface_hub.upload_folder()` |
 
