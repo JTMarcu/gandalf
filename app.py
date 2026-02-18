@@ -105,9 +105,10 @@ with gr.Blocks(css=CUSTOM_CSS, title="Gandalf — Tolkien Lore Chatbot") as demo
     gr.Markdown('<p class="divider">⚔  ✦  ⚔</p>')
 
     # Input
+    gr.Markdown("**What would you ask the Grey Wizard?**", elem_id="input-label")
     question = gr.Textbox(
-        placeholder="Ask Gandalf anything about Middle-earth…",
-        lines=2,
+        placeholder="e.g. Who is Belladonna Took?",
+        lines=3,
         show_label=False,
         elem_id="question",
     )
@@ -118,7 +119,7 @@ with gr.Blocks(css=CUSTOM_CSS, title="Gandalf — Tolkien Lore Chatbot") as demo
         submit_btn = gr.Button("Ask Gandalf", elem_id="submit")
 
     # Output
-    answer = gr.Markdown(elem_id="answer")
+    answer = gr.Markdown(value="*Gandalf's answer will appear here…*", elem_id="answer")
 
     # Examples
     with gr.Column(elem_classes=["example-btn"]):

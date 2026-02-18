@@ -111,22 +111,40 @@ CUSTOM_CSS: str = """\
     margin: 0.5rem 0;
 }
 
+/* Input label */
+#input-label {
+    color: #c8a84e !important;
+    font-family: 'Cinzel', serif !important;
+    font-size: 1rem !important;
+    letter-spacing: 0.05em !important;
+    text-align: center !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
 /* Input textbox */
+#question {
+    border: 2px solid #c8a84e !important;
+    border-radius: 8px !important;
+    padding: 2px !important;
+    background: #1e1a14 !important;
+}
 #question textarea {
     background: #1e1a14 !important;
-    border: 1px solid #3d3424 !important;
+    border: none !important;
     color: #d4c5a9 !important;
     font-family: 'Crimson Text', Georgia, serif !important;
-    font-size: 1.1rem !important;
+    font-size: 1.15rem !important;
     border-radius: 6px !important;
-    padding: 14px !important;
+    padding: 16px !important;
+    min-height: 80px !important;
 }
 #question textarea:focus {
     border-color: #c8a84e !important;
-    box-shadow: 0 0 12px rgba(200, 168, 78, 0.15) !important;
+    box-shadow: 0 0 16px rgba(200, 168, 78, 0.25) !important;
 }
 #question textarea::placeholder {
-    color: #6b5d4a !important;
+    color: #7a6b55 !important;
     font-style: italic !important;
 }
 #question label {
@@ -171,7 +189,7 @@ CUSTOM_CSS: str = """\
     border: 1px solid #3d3424 !important;
     border-radius: 6px !important;
     padding: 20px !important;
-    min-height: 160px !important;
+    min-height: 60px !important;
 }
 #answer .prose {
     color: #d4c5a9 !important;
