@@ -176,18 +176,23 @@ CUSTOM_CSS: str = """\
     padding: 0 !important;
     margin: 0 !important;
     min-height: 0 !important;
+    overflow: visible !important;
+}
+#title > * {
+    overflow: visible !important;
 }
 #title h1 {
     font-family: 'Cinzel', serif !important;
     color: #c8a84e !important;
     text-align: center !important;
     font-size: 2.2rem !important;
-    letter-spacing: 0.15em !important;
+    letter-spacing: 0.1em !important;
     text-shadow: 0 0 20px rgba(200, 168, 78, 0.3) !important;
     white-space: nowrap !important;
     margin: 0 !important;
     padding: 0 !important;
     line-height: 1.2 !important;
+    overflow: visible !important;
 }
 
 /* Description */
