@@ -1,3 +1,14 @@
+---
+title: gandalf
+emoji: 🧙
+colorFrom: gray
+colorTo: gray
+sdk: gradio
+sdk_version: "4.44.1"
+app_file: app.py
+pinned: false
+---
+
 # Gandalf 🧙
 **Tolkien Lore RAG Chatbot — Powered by LangChain, FAISS & HuggingFace**
 
