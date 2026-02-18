@@ -121,11 +121,11 @@ with gr.Blocks(css=CUSTOM_CSS, title="Gandalf — Tolkien Lore Chatbot") as demo
     answer = gr.Markdown(elem_id="answer")
 
     # Examples
-    gr.Examples(
-        examples=[[q] for q in EXAMPLE_QUESTIONS],
-        inputs=question,
-        elem_classes=["example-btn"],
-    )
+    with gr.Column(elem_classes=["example-btn"]):
+        gr.Examples(
+            examples=[[q] for q in EXAMPLE_QUESTIONS],
+            inputs=question,
+        )
 
     # Footer
     gr.Markdown(
