@@ -1,5 +1,5 @@
 # Auto-sync to HuggingFace Spaces on push to main
-# Pushes only the files the Space needs: app.py, config.py, requirements.txt, gandalf_index/
+# Uploads only the files the Space needs (handles LFS automatically)
 name: Sync to HuggingFace Space
 
 on:
@@ -13,13 +13,35 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          lfs: true
 
-      - name: Push to HuggingFace Space
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install huggingface_hub
+        run: pip install huggingface_hub
+
+      - name: Upload to HuggingFace Space
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git remote add hf https://CupaTroopa:${HF_TOKEN}@huggingface.co/spaces/CupaTroopa/gandalf || true
-          git push hf main --force
+          python - <<'EOF'
+          import os
+          from huggingface_hub import HfApi
+
+          api = HfApi(token=os.environ["HF_TOKEN"])
+          api.upload_folder(
+              folder_path=".",
+              repo_id="CupaTroopa/gandalf",
+              repo_type="space",
+              allow_patterns=[
+                  "app.py",
+                  "config.py",
+                  "requirements.txt",
+                  "README.md",
+                  "gandalf_index/**",
+              ],
+          )
+          print("Sync to HuggingFace Space complete!")
+          EOF
