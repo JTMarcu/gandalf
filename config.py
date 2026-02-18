@@ -123,23 +123,30 @@ CUSTOM_CSS: str = """\
     padding-bottom: 0 !important;
 }
 
-/* Input textbox */
+/* Input textbox — target all nested elements in Gradio 5 */
 #question {
     background: #1e1a14 !important;
-}
-#question textarea,
-#question .scroll-hide {
-    background: #1e1a14 !important;
     border: 2px solid #c8a84e !important;
+    border-radius: 8px !important;
+    min-height: 120px !important;
+}
+#question * {
+    background: #1e1a14 !important;
     color: #d4c5a9 !important;
     font-family: 'Crimson Text', Georgia, serif !important;
     font-size: 1.15rem !important;
-    border-radius: 8px !important;
-    padding: 16px !important;
+}
+#question textarea {
     min-height: 100px !important;
     height: 100px !important;
+    padding: 16px !important;
+    border: none !important;
+    caret-color: #c8a84e !important;
 }
 #question textarea:focus {
+    box-shadow: none !important;
+}
+#question:focus-within {
     border-color: #c8a84e !important;
     box-shadow: 0 0 16px rgba(200, 168, 78, 0.25) !important;
 }
