@@ -67,167 +67,136 @@ EXAMPLE_QUESTIONS: list[str] = [
     "What is the history of Gondolin?",
 ]
 
-CUSTOM_CSS: str = """\
-/* ── Middle-earth theme ─────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+# ---------------------------------------------------------------------------
+# Gradio Theme (handles inputs, buttons, borders natively — no CSS hacks)
+# ---------------------------------------------------------------------------
+import gradio as gr  # noqa: E402
+from gradio.themes.utils import sizes  # noqa: E402
 
-/* Dark parchment background */
+_gold = gr.themes.Color(
+    c50="#faf6eb", c100="#f0e6c8", c200="#e4d5a0", c300="#d4c085",
+    c400="#c8a84e", c500="#b8963a", c600="#a07e2e", c700="#8a6b24",
+    c800="#70561c", c900="#5a4516", c950="#4a3812", name="gold",
+)
+_brown = gr.themes.Color(
+    c50="#d4c5a9", c100="#c4b494", c200="#a89670", c300="#8c7a56",
+    c400="#6e5f40", c500="#564a30", c600="#3d3520", c700="#2a2518",
+    c800="#1e1a14", c900="#12100b", c950="#0d0b08", name="brown",
+)
+
+GANDALF_THEME = gr.themes.Base(
+    primary_hue=_gold,
+    secondary_hue=_gold,
+    neutral_hue=_brown,
+    font=(gr.themes.GoogleFont("Crimson Text"), "Georgia", "serif"),
+    font_mono=("Consolas", "monospace"),
+).set(
+    # Body
+    body_background_fill="#0d0b08",
+    body_background_fill_dark="#0d0b08",
+    body_text_color="#d4c5a9",
+    body_text_color_dark="#d4c5a9",
+    body_text_color_subdued="#8c7a56",
+    body_text_color_subdued_dark="#8c7a56",
+    # Backgrounds
+    background_fill_primary="#12100b",
+    background_fill_primary_dark="#12100b",
+    background_fill_secondary="#1e1a14",
+    background_fill_secondary_dark="#1e1a14",
+    # Blocks
+    block_background_fill="#1e1a14",
+    block_background_fill_dark="#1e1a14",
+    block_border_color="#3d3520",
+    block_border_color_dark="#3d3520",
+    block_label_text_color="#c8a84e",
+    block_label_text_color_dark="#c8a84e",
+    block_title_text_color="#c8a84e",
+    block_title_text_color_dark="#c8a84e",
+    # Inputs
+    input_background_fill="#12100b",
+    input_background_fill_dark="#12100b",
+    input_background_fill_focus="#1e1a14",
+    input_background_fill_focus_dark="#1e1a14",
+    input_border_color="#c8a84e",
+    input_border_color_dark="#c8a84e",
+    input_border_color_focus="#c8a84e",
+    input_border_color_focus_dark="#c8a84e",
+    input_border_width="2px",
+    input_placeholder_color="#6e5f40",
+    input_placeholder_color_dark="#6e5f40",
+    # Borders
+    border_color_primary="#3d3520",
+    border_color_primary_dark="#3d3520",
+    border_color_accent="#c8a84e",
+    border_color_accent_dark="#c8a84e",
+    # Primary button
+    button_primary_background_fill="linear-gradient(135deg, #5a4a32, #3d3424)",
+    button_primary_background_fill_dark="linear-gradient(135deg, #5a4a32, #3d3424)",
+    button_primary_background_fill_hover="linear-gradient(135deg, #6b5d4a, #5a4a32)",
+    button_primary_background_fill_hover_dark="linear-gradient(135deg, #6b5d4a, #5a4a32)",
+    button_primary_text_color="#c8a84e",
+    button_primary_text_color_dark="#c8a84e",
+    button_primary_border_color="#c8a84e",
+    button_primary_border_color_dark="#c8a84e",
+    # Secondary button
+    button_secondary_background_fill="transparent",
+    button_secondary_background_fill_dark="transparent",
+    button_secondary_background_fill_hover="#2a2518",
+    button_secondary_background_fill_hover_dark="#2a2518",
+    button_secondary_text_color="#6b5d4a",
+    button_secondary_text_color_dark="#6b5d4a",
+    button_secondary_border_color="#3d3520",
+    button_secondary_border_color_dark="#3d3520",
+    # Accent
+    color_accent="#c8a84e",
+    color_accent_soft="#2a2518",
+    color_accent_soft_dark="#2a2518",
+    loader_color="#c8a84e",
+    loader_color_dark="#c8a84e",
+    shadow_drop="none",
+    shadow_drop_lg="none",
+    block_shadow="none",
+)
+
+# CSS only for things the theme API can't handle
+CUSTOM_CSS: str = """\
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
+
 .gradio-container {
-    background: radial-gradient(ellipse at top, #1a1510 0%, #0d0b08 70%) !important;
-    font-family: 'Crimson Text', Georgia, serif !important;
     max-width: 800px !important;
     margin: 0 auto !important;
 }
 
-/* Title styling */
-#title {
+/* Title */
+#title h1 {
     font-family: 'Cinzel', serif !important;
     color: #c8a84e !important;
     text-align: center !important;
     font-size: 3rem !important;
     letter-spacing: 0.15em !important;
     text-shadow: 0 0 20px rgba(200, 168, 78, 0.3) !important;
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
 }
 
 /* Description */
 #description {
     text-align: center !important;
     color: #9a8c7a !important;
-    font-style: italic !important;
-    font-size: 1.1rem !important;
-    margin-top: 0 !important;
 }
 #description em, #description strong {
     color: #c8a84e !important;
 }
 
-/* Decorative divider */
-.divider {
-    text-align: center;
-    color: #5a4a32;
-    font-size: 1.4rem;
-    letter-spacing: 0.5em;
-    margin: 0.5rem 0;
-}
-
 /* Input label */
 #input-label {
-    color: #c8a84e !important;
-    font-family: 'Cinzel', serif !important;
-    font-size: 1rem !important;
-    letter-spacing: 0.05em !important;
     text-align: center !important;
-    margin-bottom: 0 !important;
-    padding-bottom: 0 !important;
 }
-
-/* Input textbox */
-#question {
-    background: transparent !important;
-    border: none !important;
-}
-#question textarea {
-    background: #1e1a14 !important;
-    border: 2px solid #c8a84e !important;
-    border-radius: 8px !important;
-    color: #d4c5a9 !important;
-    font-family: 'Crimson Text', Georgia, serif !important;
-    font-size: 1.15rem !important;
-    min-height: 100px !important;
-    padding: 16px !important;
-    caret-color: #c8a84e !important;
-}
-#question textarea:focus {
-    border-color: #c8a84e !important;
-    box-shadow: 0 0 16px rgba(200, 168, 78, 0.25) !important;
-    outline: none !important;
-}
-#question textarea::placeholder {
-    color: #7a6b55 !important;
-    font-style: italic !important;
-}
-#question label {
-    display: none !important;
-}
-
-/* Submit button */
-#submit {
-    background: linear-gradient(135deg, #5a4a32, #3d3424) !important;
-    border: 1px solid #c8a84e !important;
-    color: #c8a84e !important;
+#input-label strong {
     font-family: 'Cinzel', serif !important;
-    font-size: 1rem !important;
-    letter-spacing: 0.1em !important;
-    border-radius: 6px !important;
-    padding: 10px 32px !important;
-    transition: all 0.3s ease !important;
-}
-#submit:hover {
-    background: linear-gradient(135deg, #6b5d4a, #5a4a32) !important;
-    box-shadow: 0 0 16px rgba(200, 168, 78, 0.25) !important;
-}
-
-/* Clear button */
-#clear {
-    background: transparent !important;
-    border: 1px solid #3d3424 !important;
-    color: #6b5d4a !important;
-    font-family: 'Cinzel', serif !important;
-    font-size: 0.9rem !important;
-    letter-spacing: 0.1em !important;
-    border-radius: 6px !important;
-}
-#clear:hover {
-    border-color: #6b5d4a !important;
-    color: #9a8c7a !important;
-}
-
-/* Output area */
-#answer {
-    background: #1e1a14 !important;
-    border: 1px solid #3d3424 !important;
-    border-radius: 6px !important;
-    padding: 20px !important;
-    min-height: 60px !important;
-}
-#answer .prose {
-    color: #d4c5a9 !important;
-    font-family: 'Crimson Text', Georgia, serif !important;
-    font-size: 1.1rem !important;
-    line-height: 1.7 !important;
-}
-#answer label {
-    display: none !important;
-}
-
-/* Example buttons */
-.example-btn button {
-    background: #1e1a14 !important;
-    border: 1px solid #3d3424 !important;
-    color: #9a8c7a !important;
-    font-family: 'Crimson Text', Georgia, serif !important;
-    font-size: 0.95rem !important;
-    font-style: italic !important;
-    border-radius: 6px !important;
-    transition: all 0.3s ease !important;
-}
-.example-btn button:hover {
-    border-color: #c8a84e !important;
     color: #c8a84e !important;
-    background: #251f17 !important;
+    letter-spacing: 0.05em !important;
 }
 
 /* Footer */
-#footer {
-    text-align: center !important;
-    color: #4a3f30 !important;
-    font-size: 0.85rem !important;
-    margin-top: 1.5rem !important;
-    font-style: italic !important;
-}
-
-/* Hide default footer */
+#footer { text-align: center !important; color: #4a3f30 !important; font-style: italic !important; }
 footer { display: none !important; }
 """

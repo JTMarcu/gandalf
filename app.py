@@ -23,6 +23,7 @@ from config import (
     EXAMPLE_QUESTIONS,
     FAISS_INDEX_DIR,
     GANDALF_QUOTES,
+    GANDALF_THEME,
     LLM_MAX_NEW_TOKENS,
     LLM_MODEL,
     LLM_TEMPERATURE,
@@ -97,36 +98,42 @@ def ask_gandalf(question: str) -> str:
 
 # ── Gradio UI ─────────────────────────────────────────────────────────────
 
-with gr.Blocks(css=CUSTOM_CSS, title="Gandalf — Tolkien Lore Chatbot") as demo:
+with gr.Blocks(
+    css=CUSTOM_CSS,
+    theme=GANDALF_THEME,
+    title="Gandalf — Tolkien Lore Chatbot",
+) as demo:
 
     # Header
     gr.Markdown(f"# {APP_TITLE}", elem_id="title")
     gr.Markdown(APP_DESCRIPTION, elem_id="description")
-    gr.Markdown('<p class="divider">⚔  ✦  ⚔</p>')
 
     # Input
     gr.Markdown("**What would you ask the Grey Wizard?**", elem_id="input-label")
     question = gr.Textbox(
         placeholder="e.g. Who is Belladonna Took?",
         lines=3,
+        label="Question",
         show_label=False,
         elem_id="question",
     )
 
     # Buttons
     with gr.Row():
-        clear_btn = gr.ClearButton(value="Clear", elem_id="clear")
-        submit_btn = gr.Button("Ask Gandalf", elem_id="submit")
+        clear_btn = gr.ClearButton(value="Clear")
+        submit_btn = gr.Button("Ask Gandalf", variant="primary")
 
     # Output
-    answer = gr.Markdown(value="*Gandalf's answer will appear here…*", elem_id="answer")
+    answer = gr.Markdown(
+        value="*Gandalf's answer will appear here…*",
+        elem_id="answer",
+    )
 
     # Examples
-    with gr.Column(elem_classes=["example-btn"]):
-        gr.Examples(
-            examples=[[q] for q in EXAMPLE_QUESTIONS],
-            inputs=question,
-        )
+    gr.Examples(
+        examples=[[q] for q in EXAMPLE_QUESTIONS],
+        inputs=question,
+    )
 
     # Footer
     gr.Markdown(
