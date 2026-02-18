@@ -11,7 +11,7 @@ CHUNK_OVERLAP: int = 100
 # ---------------------------------------------------------------------------
 # LLM
 # ---------------------------------------------------------------------------
-LLM_MODEL: str = "HuggingFaceH4/zephyr-7b-beta"
+LLM_MODEL: str = "Qwen/Qwen2.5-7B-Instruct"
 LLM_TEMPERATURE: float = 0.7
 LLM_MAX_NEW_TOKENS: int = 256
 
