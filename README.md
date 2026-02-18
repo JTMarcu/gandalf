@@ -11,7 +11,7 @@ pinned: false
 ---
 
 # Gandalf 🧙
-**Tolkien Lore RAG Chatbot — Powered by LangChain, FAISS & HuggingFace**
+**Tolkien Lore RAG Chatbot — Powered by FAISS, Qwen & Gradio**
 
 Gandalf is a Retrieval-Augmented Generation (RAG) chatbot grounded in J.R.R. Tolkien's core legendarium:
 
@@ -19,7 +19,7 @@ Gandalf is a Retrieval-Augmented Generation (RAG) chatbot grounded in J.R.R. Tol
 - 📗 **The Lord of the Rings** (1954–1955)
 - 📙 **The Silmarillion** (1977)
 
-It combines semantic vector search over the full text with the **Zephyr-7B** LLM to deliver canonical, chapter-referenced answers — all in Gandalf's voice.
+It combines semantic vector search over the full text with the **Qwen2.5-7B-Instruct** LLM to deliver canonical, chapter-referenced answers — all in Gandalf's voice, wrapped in a Middle-earth themed UI.
 
 🔗 **Live Demo**: [huggingface.co/spaces/CupaTroopa/gandalf](https://huggingface.co/spaces/CupaTroopa/gandalf)
 
@@ -29,12 +29,26 @@ It combines semantic vector search over the full text with the **Zephyr-7B** LLM
 
 | Feature | Details |
 |---------|---------|
-| **Multi-Book RAG** | Searches across all three books simultaneously |
+| **Multi-Book RAG** | Searches across all three books simultaneously via FAISS |
 | **Source Citations** | Every answer includes book + chapter reference |
 | **Gandalf Persona** | Responds with ancient wisdom, wit, and poetic cadence |
 | **Fallback Quotes** | Graceful "I don't know" with in-character Gandalf lines |
+| **Middle-earth UI** | Dark parchment theme with Cinzel & Crimson Text fonts, gold accents |
 | **Auto-Deploy** | Push to `main` → GitHub Action syncs to HuggingFace Spaces |
-| **Gradio UI** | Clean web interface that works locally and on HF Spaces |
+
+---
+
+## 🛠 Tech Stack
+
+| Component | Technology |
+|-----------|------------|
+| **Embeddings** | [`sentence-transformers/all-MiniLM-L6-v2`](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) |
+| **Vector Store** | [FAISS](https://github.com/facebookresearch/faiss) (via `langchain-community`) |
+| **LLM** | [`Qwen/Qwen2.5-7B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct) via HF Inference API |
+| **LLM Interface** | `huggingface_hub.InferenceClient.chat_completion()` |
+| **Web UI** | [Gradio 5](https://www.gradio.app/) Blocks API with custom CSS |
+| **PDF Parsing** | `pdfminer.six` via LangChain's `PyPDFLoader` |
+| **CI/CD** | GitHub Actions → `huggingface_hub.upload_folder()` |
 
 ---
 
@@ -43,15 +57,12 @@ It combines semantic vector search over the full text with the **Zephyr-7B** LLM
 ```
 Gandalf/
 ├── app.py                  # Gradio web app (local & HF Spaces entry point)
-├── config.py               # All constants, prompts, model settings
+├── config.py               # Constants, prompts, model settings, UI theme
 ├── indexer.py              # Unified PDF → FAISS indexing pipeline
 ├── requirements.txt        # Python dependencies
 ├── gandalf_index/          # FAISS vectorstore (index.faiss + index.pkl)
 │   ├── index.faiss
 │   └── index.pkl
-├── books/                  # Source PDFs (not committed)
-├── models/                 # Optional local GGUF models (not committed)
-├── notebooks/              # Archived Jupyter experiments
 ├── archive/                # Legacy scripts kept for reference
 ├── .github/
 │   ├── copilot-instructions.md
@@ -60,6 +71,12 @@ Gandalf/
 ├── .gitignore
 └── README.md
 ```
+
+**Not committed** (see `.gitignore`):
+- `books/` — source PDFs (copyrighted)
+- `models/` — local GGUF models
+- `notebooks/` — Jupyter experiments
+- `.env` — API tokens
 
 ---
 
@@ -77,51 +94,55 @@ Create a `.env` file:
 ```properties
 HUGGINGFACEHUB_API_TOKEN=your_token_here
 ```
+Get a free token at [huggingface.co/settings/tokens](https://huggingface.co/settings/tokens).
 
-### 3. (Optional) Rebuild the Vector Index
-Place PDFs in `books/` and run:
+### 3. Launch the Chatbot
+```bash
+python app.py
+```
+Open the Gradio link in your browser and speak, friend!
+
+### 4. (Optional) Rebuild the Vector Index
+If you want to re-index from source PDFs, place them in `books/` and run:
 ```bash
 python indexer.py                   # All three books
 python indexer.py --book hobbit     # Just The Hobbit
 python indexer.py --book lotr silmarillion
 ```
 
-### 4. Launch the Chatbot
-```bash
-python app.py
-```
-Open the Gradio link in your browser and speak, friend!
-
 ---
 
-## 🧪 Example
+## 🔍 How It Works
 
 ```
-Q: What is the origin of the Silmarils?
-
-🧙 Gandalf says:
-The Silmarils were wrought by Fëanor, greatest of the Noldor, in the days
-before the Darkening of Valinor. Within them he captured the light of the
-Two Trees of Valinor — Telperion and Laurelin — and no craft since has
-equalled their making...
-
-📖 Source: The Silmarillion, Of the Silmarils and the Unrest of the Noldor
+User Question
+      │
+      ▼
+┌─────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  FAISS       │────▶│  Top-k chunks    │────▶│  Qwen 2.5-7B    │
+│  Vector      │     │  + metadata      │     │  Instruct        │
+│  Search      │     │  (book, chapter) │     │  (chat_completion)│
+└─────────────┘     └──────────────────┘     └────────┬────────┘
+                                                       │
+                                                       ▼
+                                              Gandalf-style answer
+                                              + source citation
 ```
 
----
-
-## 🛠 How It Works
-
-1. **Text Extraction** — PDFs are parsed with `pdfminer.six` via LangChain's `PyPDFLoader`
-2. **Chunking + Metadata** — Text is split into 500-char chunks with chapter/book metadata
-3. **Embedding + Storage** — Each chunk is vectorized with `all-MiniLM-L6-v2` and stored in FAISS
-4. **Retrieval + Generation** — Zephyr-7B uses top-k retrieved chunks to generate in-character answers
+1. **Embed the question** — The user's query is vectorized with `all-MiniLM-L6-v2`
+2. **Retrieve context** — FAISS returns the most relevant text chunks (500 chars each) with book/chapter metadata
+3. **Generate answer** — The context + question are sent to Qwen2.5-7B-Instruct via `InferenceClient.chat_completion()` with a Gandalf persona system prompt
+4. **Cite sources** — The response includes the book name and chapter from the top retrieved chunk
+5. **Fallback** — If the model says "I don't know", a random in-character Gandalf quote is returned instead
 
 ---
 
 ## 🚢 Deployment
 
 The repo auto-syncs to [HuggingFace Spaces](https://huggingface.co/spaces/CupaTroopa/gandalf) via GitHub Actions on every push to `main`.
+
+Only these files are uploaded to the Space:
+- `app.py`, `config.py`, `requirements.txt`, `README.md`, `gandalf_index/**`
 
 **Setup** (one-time):
 1. Go to your GitHub repo → **Settings → Secrets and variables → Actions**
@@ -134,17 +155,17 @@ The repo auto-syncs to [HuggingFace Spaces](https://huggingface.co/spaces/CupaTr
 
 - Python 3.10+
 - HuggingFace API token (free tier works)
-- ~8–16 GB RAM for local model inference (optional)
+- ~500 MB disk for the FAISS index + dependencies
 
 ---
 
-## 🔮 Future Enhancements
+## 🔮 Future Ideas
 
-- Add support for *Unfinished Tales* and *The Letters of J.R.R. Tolkien*
-- Gandalf-style voice with ElevenLabs or Bark
 - Chat history / multi-turn conversation
-- Chapter highlighting or source text preview
-- Offline-only mode with GGUF-compatible local models
+- Support for *Unfinished Tales* and *The Letters of J.R.R. Tolkien*
+- Gandalf-style voice synthesis
+- Source text preview alongside answers
+- Streaming responses
 
 ---
 

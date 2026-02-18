@@ -7,13 +7,10 @@ Gandalf is a Retrieval-Augmented Generation (RAG) chatbot powered by Tolkien's l
 ```
 Gandalf/
 ├── app.py              # Gradio web app (entry point for both local & HF Spaces)
-├── config.py           # Shared constants, prompts, model settings
+├── config.py           # Shared constants, prompts, model settings, UI theme
 ├── indexer.py           # Unified PDF → FAISS indexing pipeline
 ├── requirements.txt     # Python dependencies
 ├── gandalf_index/       # FAISS vectorstore (index.faiss + index.pkl)
-├── books/               # Source PDFs (not committed — see README)
-├── models/              # Optional local GGUF models (not committed)
-├── notebooks/           # Archived Jupyter experiments
 ├── archive/             # Legacy scripts kept for reference
 ├── .github/workflows/   # CI: auto-sync to HuggingFace Spaces
 └── README.md
@@ -54,12 +51,14 @@ Gandalf/
 - Metadata per chunk: `book_name`, `chapter_number` (Hobbit only), `chapter_name`
 
 ### Gradio UI
-- Keep the interface simple — single textbox input, text output
+- Uses `gr.Blocks` API with custom CSS (Middle-earth dark parchment theme)
+- All UI constants (CSS, examples, title, description) live in `config.py`
+- Stacked vertical layout: title → description → input → buttons → output → examples → footer
 - Include source citation (book + chapter) in every response
 - Fallback Gandalf quotes when the model says "I don't know"
 
 ## Do NOT
-- Commit `.env`, `books/`, `models/`, or `__pycache__/`
+- Commit `.env`, `books/`, `models/`, `notebooks/`, or `__pycache__/`
 - Use `langchain.embeddings` or `langchain.vectorstores` (deprecated)
 - Change the FAISS index folder name (HF Space depends on `gandalf_index/`)
 - Remove the `allow_dangerous_deserialization=True` flag (required for FAISS)

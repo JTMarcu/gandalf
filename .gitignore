@@ -35,6 +35,9 @@ models/
 # Books (copyrighted PDFs — not committed)
 books/
 
+# Notebooks (local experiments — not committed)
+notebooks/
+
 # Legacy index folders (only gandalf_index/ is canonical)
 gandalf_index_hobbit/
 gandalf_index_lotr/
