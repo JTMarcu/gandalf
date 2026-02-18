@@ -1,9 +1,0 @@
-langchain
-gradio
-huggingface_hub
-sentence-transformers
-faiss-cpu
-python-dotenv
-pdfminer.six
-langchain-community
-langchain-huggingface

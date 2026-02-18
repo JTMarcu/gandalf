@@ -1,0 +1,25 @@
+# Auto-sync to HuggingFace Spaces on push to main
+# Pushes only the files the Space needs: app.py, config.py, requirements.txt, gandalf_index/
+name: Sync to HuggingFace Space
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      - name: Push to HuggingFace Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git remote add hf https://CupaTroopa:${HF_TOKEN}@huggingface.co/spaces/CupaTroopa/gandalf || true
+          git push hf main --force

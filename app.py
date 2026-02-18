@@ -1,94 +1,113 @@
+"""Gandalf — Tolkien Lore RAG Chatbot.
+
+Works both locally (reads .env) and on HuggingFace Spaces (reads secrets).
+"""
+
+from __future__ import annotations
+
 import os
+import random
 import warnings
+
+import gradio as gr
+from dotenv import load_dotenv
+from huggingface_hub import InferenceClient
+from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
+from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings, HuggingFaceEndpoint
+
+from config import (
+    APP_DESCRIPTION,
+    APP_TITLE,
+    EMBEDDING_MODEL,
+    FAISS_INDEX_DIR,
+    GANDALF_QUOTES,
+    LLM_MAX_NEW_TOKENS,
+    LLM_MODEL,
+    LLM_TEMPERATURE,
+    SYSTEM_PROMPT,
+)
+
 warnings.filterwarnings("ignore", category=FutureWarning)
 
-# Note: In a Hugging Face Space, the token should be set as an environment variable in the Space settings.
-from dotenv import load_dotenv # remove when on HF Space
+# ── Environment ───────────────────────────────────────────────────────────
+load_dotenv()  # no-op on HF Spaces (no .env file present)
 
-# 🔐 Load Hugging Face API token
-load_dotenv() #remove line when on HF Space. 
-hf_token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+hf_token: str | None = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 if not hf_token:
-    raise ValueError("❌ Missing Hugging Face API token in environment variables.")
+    raise ValueError("Missing HUGGINGFACEHUB_API_TOKEN environment variable.")
 
-# 📚 Load FAISS vectorstore from uploaded folder (must be uploaded to Space)
-from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
-
-embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-db = FAISS.load_local("gandalf_index", embedding_model, allow_dangerous_deserialization=True)
+# ── Vectorstore ───────────────────────────────────────────────────────────
+embedding_model = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
+db = FAISS.load_local(
+    FAISS_INDEX_DIR, embedding_model, allow_dangerous_deserialization=True
+)
 retriever = db.as_retriever()
 
-# 🤖 Load LLM from Hugging Face Inference API
-from huggingface_hub import InferenceClient
-from langchain_huggingface import HuggingFaceEndpoint
-
-client = InferenceClient(model="mistralai/Mistral-7B-Instruct-v0.1", token=hf_token)
-
+# ── LLM ───────────────────────────────────────────────────────────────────
+client = InferenceClient(model=LLM_MODEL, token=hf_token)
 llm = HuggingFaceEndpoint(
     client=client,
-    model="mistralai/Mistral-7B-Instruct-v0.1",
-    temperature=0.7,
-    max_new_tokens=256,
+    model=LLM_MODEL,
+    temperature=LLM_TEMPERATURE,
+    max_new_tokens=LLM_MAX_NEW_TOKENS,
+    task="text-generation",
 )
 
-# 📜 Create custom prompt and QA chain
-from langchain.prompts import PromptTemplate
-from langchain.chains import RetrievalQA
-
-custom_prompt = PromptTemplate(
+# ── QA chain ──────────────────────────────────────────────────────────────
+prompt = PromptTemplate(
     input_variables=["context", "question"],
-    template="""
-Use the following context to answer the question. 
-If the answer is not in the context, reply as Gandalf would — something wise or witty, and make it clear that the answer is unknown.
-Context:
-{context}
-Question:
-{question}
-Answer:
-"""
+    template=SYSTEM_PROMPT,
 )
-
 
 qa_chain = RetrievalQA.from_chain_type(
     llm=llm,
     retriever=retriever,
     chain_type="stuff",
     return_source_documents=True,
-    chain_type_kwargs={"prompt": custom_prompt}
+    chain_type_kwargs={"prompt": prompt},
 )
 
-# 🎛️ Gradio interface
-import gradio as gr
 
-def ask_gandalf(question):
-    # Retrieve relevant docs
-    docs = retriever.get_relevant_documents(question)
+# ── Chat function ─────────────────────────────────────────────────────────
 
-    # Get unique chapters from docs
-    chapters = {doc.metadata.get("chapter", "Unknown") for doc in docs}
-    chapter_info = ", ".join(sorted(chapters))
+def ask_gandalf(question: str) -> str:
+    """Run the RAG chain and format the answer with source citation."""
+    result = qa_chain.invoke({"query": question})
+    answer: str = result["result"]
+    sources: list = result["source_documents"]
 
-    # Build custom prompt with context + chapter info
-    context = "\n\n".join(doc.page_content for doc in docs)
+    # Fallback when the model punts
+    if "i don't know" in answer.lower():
+        answer = random.choice(GANDALF_QUOTES)
 
-    prompt = custom_prompt.format(
-        context=context,
-        question=question,
-        chapter_info=chapter_info or "Unknown"
-    )
+    # Build source citation from first retrieved chunk
+    if sources:
+        meta = sources[0].metadata
+        book = meta.get("book_name", "Unknown book")
+        chapter_num = meta.get("chapter_number", "")
+        chapter_name = meta.get("chapter_name", "Unknown chapter")
+        parts = [book]
+        if chapter_num:
+            parts.append(chapter_num)
+        if chapter_name and chapter_name != "Unknown":
+            parts.append(chapter_name)
+        reference = f"📖 Source: {', '.join(parts)}"
+    else:
+        reference = "📖 Source: Unknown"
 
-    # Call the model
-    answer = llm.invoke(prompt)
+    return f"{answer}\n\n{reference}"
 
-    return f"{answer}\n\n📖 Referenced Chapter(s): {chapter_info}"
+
+# ── Gradio UI ─────────────────────────────────────────────────────────────
 
 demo = gr.Interface(
     fn=ask_gandalf,
     inputs=gr.Textbox(placeholder="Ask Gandalf anything about Middle-earth..."),
     outputs="text",
-    title="Ask Gandalf",
-    description="🧙 Ask questions based on the lore from The Lord of the Rings."
+    title=APP_TITLE,
+    description=APP_DESCRIPTION,
 )
 
 if __name__ == "__main__":
