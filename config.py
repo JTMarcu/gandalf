@@ -71,7 +71,6 @@ EXAMPLE_QUESTIONS: list[str] = [
 # Gradio Theme (handles inputs, buttons, borders natively — no CSS hacks)
 # ---------------------------------------------------------------------------
 import gradio as gr  # noqa: E402
-from gradio.themes.utils import sizes  # noqa: E402
 
 _gold = gr.themes.Color(
     c50="#faf6eb", c100="#f0e6c8", c200="#e4d5a0", c300="#d4c085",
