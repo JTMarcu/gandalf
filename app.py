@@ -45,7 +45,7 @@ embedding_model = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
 db = FAISS.load_local(
     FAISS_INDEX_DIR, embedding_model, allow_dangerous_deserialization=True
 )
-retriever = db.as_retriever()
+retriever = db.as_retriever(search_kwargs={"k": 6})
 
 # ── LLM ───────────────────────────────────────────────────────────────────
 client = InferenceClient(model=LLM_MODEL, token=hf_token)

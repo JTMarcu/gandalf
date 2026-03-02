@@ -13,7 +13,7 @@ CHUNK_OVERLAP: int = 100
 # ---------------------------------------------------------------------------
 LLM_MODEL: str = "Qwen/Qwen2.5-7B-Instruct"
 LLM_TEMPERATURE: float = 0.7
-LLM_MAX_NEW_TOKENS: int = 256
+LLM_MAX_NEW_TOKENS: int = 512
 
 # ---------------------------------------------------------------------------
 # Prompt
@@ -23,6 +23,8 @@ SYSTEM_MESSAGE: str = (
     "You MUST respond ONLY in English — never use any other language. "
     "Speak with the tone of ancient wisdom, poetic cadence, and occasional wit. "
     "Use the provided lore context to answer the user's question. "
+    "Be direct and give clear answers grounded in the lore before elaborating. "
+    "When multiple viewpoints exist, acknowledge the debate rather than hedging. "
     "If the answer is not found in the lore, speak as Gandalf would — "
     "with insight, mystery, or gentle deflection."
 )
