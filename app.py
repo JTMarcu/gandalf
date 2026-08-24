@@ -32,6 +32,7 @@ from config import (
 )
 
 warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # ── Environment ───────────────────────────────────────────────────────────
 load_dotenv()  # no-op on HF Spaces (no .env file present)
@@ -90,9 +91,11 @@ def ask_gandalf(question: str) -> str:
     if "i don't know" in answer.lower():
         answer = random.choice(GANDALF_QUOTES)
 
-    # Build source citation from first retrieved chunk
-    if sources:
-        meta = sources[0].metadata
+    # Build source citations from all retrieved chunks (deduplicated, ordered)
+    seen: set = set()
+    citations: list[str] = []
+    for doc in sources:
+        meta = doc.metadata
         book = meta.get("book_name", "Unknown book")
         chapter_num = meta.get("chapter_number", "")
         chapter_name = meta.get("chapter_name", "Unknown chapter")
@@ -101,7 +104,13 @@ def ask_gandalf(question: str) -> str:
             parts.append(chapter_num)
         if chapter_name and chapter_name != "Unknown":
             parts.append(chapter_name)
-        reference = f"📖 Source: {', '.join(parts)}"
+        label = ", ".join(parts)
+        if label not in seen:
+            seen.add(label)
+            citations.append(label)
+
+    if citations:
+        reference = "📖 Sources:\n" + "\n".join(f"- {c}" for c in citations)
     else:
         reference = "📖 Source: Unknown"
 
@@ -159,4 +168,6 @@ with gr.Blocks(
     clear_btn.add([question, answer])
 
 if __name__ == "__main__":
-    demo.launch()
+    # ssr_mode=False avoids Gradio's experimental SSR layer, which emits
+    # benign SvelteKit 405 errors in the HF Space logs.
+    demo.launch(ssr_mode=False)
