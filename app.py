@@ -170,4 +170,5 @@ with gr.Blocks(
 if __name__ == "__main__":
     # ssr_mode=False avoids Gradio's experimental SSR layer, which emits
     # benign SvelteKit 405 errors in the HF Space logs.
-    demo.launch(ssr_mode=False)
+    # pwa=True lets Android/Chrome offer "Install app" for a home-screen icon.
+    demo.launch(ssr_mode=False, pwa=True)
