@@ -48,13 +48,16 @@ db = FAISS.load_local(
 retriever = db.as_retriever(search_kwargs={"k": 6})
 
 # ── LLM ───────────────────────────────────────────────────────────────────
-client = InferenceClient(model=LLM_MODEL, token=hf_token)
+client = InferenceClient(model=LLM_MODEL, api_key=hf_token)
 
 
 # ── Chat function ─────────────────────────────────────────────────────────
 
 def ask_gandalf(question: str) -> str:
     """Retrieve relevant lore and generate a Gandalf-style answer."""
+    if not question or not question.strip():
+        return "*Speak, friend, and ask your question.*"
+
     # Retrieve relevant documents
     docs = retriever.invoke(question)
     context = "\n\n".join(doc.page_content for doc in docs)
@@ -66,12 +69,21 @@ def ask_gandalf(question: str) -> str:
     ]
 
     # Generate answer via chat completion
-    response = client.chat_completion(
-        messages=messages,
-        max_tokens=LLM_MAX_NEW_TOKENS,
-        temperature=LLM_TEMPERATURE,
-    )
-    answer: str = response.choices[0].message.content
+    try:
+        response = client.chat_completion(
+            messages=messages,
+            max_tokens=LLM_MAX_NEW_TOKENS,
+            temperature=LLM_TEMPERATURE,
+        )
+        answer: str = response.choices[0].message.content
+    except Exception as exc:  # noqa: BLE001 — surface a friendly message, not a stack trace
+        return (
+            "⚠️ The palantír is clouded — I could not reach the model.\n\n"
+            f"*Details: {exc}*\n\n"
+            "Check that a valid `HUGGINGFACEHUB_API_TOKEN` (with Inference "
+            "Providers access) is configured."
+        )
+
     sources: list = docs
 
     # Fallback when the model punts

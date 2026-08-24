@@ -15,11 +15,11 @@ import warnings
 from typing import Optional
 
 from dotenv import load_dotenv
-from langchain.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.vectorstores import FAISS
 from langchain_core.documents import Document
 from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from config import CHUNK_OVERLAP, CHUNK_SIZE, EMBEDDING_MODEL, FAISS_INDEX_DIR
 

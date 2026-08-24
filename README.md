@@ -19,7 +19,7 @@ Gandalf is a Retrieval-Augmented Generation (RAG) chatbot grounded in J.R.R. Tol
 - 📗 **The Lord of the Rings** (1954–1955)
 - 📙 **The Silmarillion** (1977)
 
-It combines semantic vector search over the full text with the **Qwen2.5-7B-Instruct** LLM to deliver canonical, chapter-referenced answers — all in Gandalf's voice, wrapped in a Middle-earth themed UI.
+It combines semantic vector search over the full text with the **Qwen2.5-72B-Instruct** LLM to deliver canonical, chapter-referenced answers — all in Gandalf's voice, wrapped in a Middle-earth themed UI.
 
 🔗 **Live Demo**: [huggingface.co/spaces/CupaTroopa/gandalf](https://huggingface.co/spaces/CupaTroopa/gandalf)
 
@@ -44,7 +44,7 @@ It combines semantic vector search over the full text with the **Qwen2.5-7B-Inst
 |-----------|------------|
 | **Embeddings** | [`sentence-transformers/all-MiniLM-L6-v2`](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) |
 | **Vector Store** | [FAISS](https://github.com/facebookresearch/faiss) (via `langchain-community`) |
-| **LLM** | [`Qwen/Qwen2.5-7B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct) via HF Inference API |
+| **LLM** | [`Qwen/Qwen2.5-72B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-72B-Instruct) via HF Inference Providers |
 | **LLM Interface** | `huggingface_hub.InferenceClient.chat_completion()` |
 | **Web UI** | [Gradio 5](https://www.gradio.app/) Blocks API with custom `gr.themes.Base` theme |
 | **PDF Parsing** | `pdfminer.six` via LangChain's `PyPDFLoader` |
@@ -131,7 +131,7 @@ User Question
 
 1. **Embed the question** — The user's query is vectorized with `all-MiniLM-L6-v2`
 2. **Retrieve context** — FAISS returns the most relevant text chunks (500 chars each) with book/chapter metadata
-3. **Generate answer** — The context + question are sent to Qwen2.5-7B-Instruct via `InferenceClient.chat_completion()` with a Gandalf persona system prompt
+3. **Generate answer** — The context + question are sent to Qwen2.5-72B-Instruct via `InferenceClient.chat_completion()` with a Gandalf persona system prompt
 4. **Cite sources** — The response includes the book name and chapter from the top retrieved chunk
 5. **Fallback** — If the model says "I don't know", a random in-character Gandalf quote is returned instead
 

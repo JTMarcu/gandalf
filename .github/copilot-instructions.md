@@ -29,7 +29,7 @@ Gandalf/
 - Embeddings: `langchain_huggingface.HuggingFaceEmbeddings`
 - Vectorstore: `langchain_community.vectorstores.FAISS`
 - LLM endpoint: `huggingface_hub.InferenceClient` (chat_completion API)
-- LLM model: `Qwen/Qwen2.5-7B-Instruct` (via HF Inference Providers)
+- LLM model: `Qwen/Qwen2.5-72B-Instruct` (via HF Inference Providers)
 - Always pass `allow_dangerous_deserialization=True` when loading FAISS indexes
 - Keep chunk_size=500, chunk_overlap=100 for consistency with existing index
 
